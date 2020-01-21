@@ -132,12 +132,14 @@ jobs:
         cd $HOME/libzim/build
         meson test --verbose
         ninja coverage
+        ls -a
       env:
         LD_LIBRARY_PATH: "/home/runner/BUILD_${{matrix.target}}/INSTALL/lib:/home/runner/BUILD_${{matrix.target}}/INSTALL/lib${{matrix.lib_postfix}}"
         SKIP_BIG_MEMORY_TEST: 1
     - name: Publish coverage
+      uses: codecov/codecov-action@v1
       if: startsWith(matrix.target, 'native_')
-      shell: bash
-      run: |
-        cd $HOME/libzim/build
-        bash <(curl -s https://codecov.io/bash)
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        file: $HOME/libzim/build/coverage.xml
+        fail_ci_if_error: true
